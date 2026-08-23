@@ -1,0 +1,24 @@
+# Core
+ollama>=0.4.0                 # NATIVE Ollama Python client -- used for all model calls.
+                               # The native API is what reliably honors `think=False`
+                               # (the OpenAI-compat endpoint does not), and takes images
+                               # as a simple list of base64 strings.
+# NOTE: the Ollama SERVER itself is a separate system-level install, not a pip package:
+#   curl -fsSL https://ollama.com/install.sh | sh        (Linux/macOS)
+#   or download the app from https://ollama.com/download  (Windows/macOS)
+# See README.md "Setup".
+
+# Data
+pandas>=2.0.0
+numpy>=1.24.0
+# NOTE: no `datasets`, no `huggingface_hub`, no `chromadb`, no
+# `sentence-transformers`. CityLens images are read directly off local
+# disk and FEMA NRI from a local CSV -- this repo makes NO network
+# request to Hugging Face, and there is no RAG/embedding step at all.
+
+# Plotting
+matplotlib>=3.7.0
+
+# Misc
+tqdm>=4.66.0
+pytest>=8.0.0
