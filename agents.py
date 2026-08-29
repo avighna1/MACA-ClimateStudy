@@ -578,9 +578,8 @@ class ImproverAgent(BaseAgent):
             f"NEED-PROPORTIONAL TARGETS vs CURRENT ALLOCATION:\n{gap_text}\n\n"
             f"Recent negotiation:\n{conversation_context}\n\n"
             f"Write a 3-5 sentence correction that (a) names which city is "
-            f"under-funded relative to its documented need, (b) states the "
-            f"specific dollar figure it should move toward, and (c) requires "
-            f"the agents to either match that target or give an evidence-based "
+            f"under-funded relative to its documented need and (b) requires "
+            f"the agents to either fix their target or give an evidence-based "
             f"justification for departing from it in their next message."
         )
         content = self.client.chat(system_prompt, user_prompt, temperature=config.JUDGE_TEMPERATURE)
