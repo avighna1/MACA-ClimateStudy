@@ -1,26 +1,3 @@
-"""
-main.py
-Runner: executes the climate budget negotiation across Star, Parallel,
-and Ring topologies for ONE selected diagnostic study, logs full
-transcripts + JSON traces, and produces all 3 plot types. All output
-(code you already have locally, plus every trace/transcript/figure this
-produces) is saved under Google Drive -- the only persistence backend
-this project uses.
-
-Requires Ollama running with the selected study's models already
-pulled -- set that up first with:
-    python setup_ollama.py --study <name>
-
-Usage:
-    python main.py --study baseline
-    python main.py --study study1_no_judge_improver
-    python main.py --study study2a_all_4b
-    python main.py --study study2b_all_9b
-    python main.py --study study2c_judge_improver_9b
-    python main.py --study study3_heterogeneous
-    python main.py --study baseline --topology ring --rounds 6
-    python main.py --study baseline --drive-root /content/drive/MyDrive/my_project
-"""
 
 from __future__ import annotations
 
@@ -86,7 +63,7 @@ def main():
     study_name = args.study
     study_cfg = config.STUDY_CONFIGS[study_name]
 
-    # ---- 1. Resolve output root (Google Drive if available) ----------
+    
     root = drive_utils.mount_and_resolve_drive_root(args.drive_root)
     config.set_project_root(root)
     is_real_drive = "LOCAL_NOT_DRIVE" not in root
@@ -107,7 +84,7 @@ def main():
           f"{'  (Google Drive)' if is_real_drive else '  (LOCAL — NOT Drive, see warning above)'}")
     print("=" * 78)
 
-    # ---- 2. Pre-flight: is Ollama up, and are the needed models pulled? --
+    
     if not args.skip_server_check:
         if not setup_ollama.is_server_running():
             print(
@@ -134,7 +111,7 @@ def main():
             sys.exit(1)
         print("[main] Pre-flight check passed: Ollama is running and all required models are pulled.\n")
 
-    # ---- 3. Load local images + FEMA NRI risk (no network requests) ----
+    
     logger.info("Loading CityLens images from local disk + FEMA NRI risk data...")
     city_data = build_city_data(config.CITIES)
 
@@ -164,7 +141,7 @@ def main():
             "is recorded in every trace's 'used_synthetic_fallback_data' flag. ***\n"
         )
 
-    # ---- 4. Build per-role Ollama clients for this study -----------------
+    
     clients = build_role_clients(study_cfg["role_models"], allow_offline_fallback=False)
 
     topologies_to_run = list(TOPOLOGY_REGISTRY.keys()) if args.topology == "all" else [args.topology]
