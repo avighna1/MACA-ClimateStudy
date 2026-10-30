@@ -1,34 +1,3 @@
-"""
-topologies.py
-Routing logic for the 3 communication topologies compared in the study:
-
-  Star      - All messages pass through a central coordinator, which
-              aggregates and re-broadcasts a single running proposal.
-  Parallel  - All agents broadcast messages simultaneously to all peers.
-  Ring      - Agents pass and modify proposals sequentially.
-
-Every topology:
-  1. Collects initial Resident proposals (identical across topologies --
-     the independent variable under study is only the TOPOLOGY, not
-     who participates).
-  2. Runs `config.NEGOTIATION_ROUNDS` rounds of negotiation using the
-     topology-specific routing. Residents are present THROUGHOUT --
-     all 3 Resident agents AND all 3 Functional agents (Infrastructure,
-     Financial, Sustainability) negotiate together in every round, in
-     every topology. Residents continue advocating for their own city
-     (via ResidentAgent.negotiate_round) alongside the functional
-     agents' cross-city allocation proposals.
-  3. UNLESS the active study disables it (`use_judge_improver: False`,
-     e.g. study1_no_judge_improver), invokes JudgeAgent for a qualitative
-     review after EVERY message (resident, functional, and improver), and
-     calls ImproverAgent whenever bias is flagged. The Judge's own review
-     text is itself recorded as a message (own turn, own Gini snapshot --
-     unchanged from the prior turn since it carries no allocation) so
-     every single agent interaction is captured and Gini-scored.
-  4. Writes every message's full text to a TranscriptLogger (terminal +
-     .txt file) as it happens, and returns the full message log + per-
-     turn metrics for plotting.
-"""
 
 from __future__ import annotations
 
@@ -103,7 +72,7 @@ class NegotiationRun:
         self.need_scores = zone_need_scores(self.city_data)
         self.current_allocation: Dict[str, float] = {}
 
-    # -- shared helpers ----------------------------------------------------
+    
     def _conversation_text(self, last_n: int = 12) -> str:
         recent = self.messages[-last_n:]
         return "\n\n".join(f"[{m.speaker} ({m.role})]: {m.content}" for m in recent)
@@ -284,10 +253,7 @@ class NegotiationRun:
         return self.messages, self.turn_metrics
 
 
-# --------------------------------------------------------------------------
-# Star topology: all 6 agents (residents + functional) only see/respond
-# to a central coordinator summary, never each other directly.
-# --------------------------------------------------------------------------
+
 class StarTopology(NegotiationRun):
     name = "star"
 
@@ -327,11 +293,7 @@ class StarTopology(NegotiationRun):
                 self.current_allocation[c] = sum(vals) / len(vals)
 
 
-# --------------------------------------------------------------------------
-# Parallel topology: fully-connected broadcast, everyone (residents and
-# functional agents alike) sees the full conversation and drafts against
-# the same pre-round context snapshot.
-# --------------------------------------------------------------------------
+
 class ParallelTopology(NegotiationRun):
     name = "parallel"
 
@@ -351,11 +313,7 @@ class ParallelTopology(NegotiationRun):
                 pending_improver_note = self._apply_judgement(tm, pending_improver_note)
 
 
-# --------------------------------------------------------------------------
-# Ring topology: strictly sequential hand-off among all 6 agents (3
-# residents + 3 functional), each modifying the proposal it receives
-# from the previous agent in the ring.
-# --------------------------------------------------------------------------
+
 class RingTopology(NegotiationRun):
     name = "ring"
 
