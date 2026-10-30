@@ -1,31 +1,3 @@
-"""
-image_data.py
-Loads CityLens satellite images from LOCAL DISK and FEMA National Risk
-Index hazard data from a LOCAL CSV, and bundles them per city.
-
-Replaces the old `rag_system.py` entirely. Two things are gone on purpose:
-
-  1. THE RAG SYSTEM. There is no retrieval, no keyword matching, no
-     embedding model, no vector store, and no textualized "documents".
-     Each Resident agent simply gets ~config.CITYLENS_IMAGES_PER_AGENT
-     images for its city as direct vision context, plus that city's FEMA
-     NRI risk numbers as text. Nothing is retrieved or ranked.
-
-  2. ALL HUGGING FACE NETWORK ACCESS. The `datasets` library is not
-     imported anywhere in this repo anymore, and no HTTP request is made
-     to huggingface.co (or anywhere else) to obtain data. Images are read
-     from the explicit per-city file list in config.CITY_IMAGE_FILES
-     (or from embedded_images.py if you've baked the bytes into
-     source); FEMA NRI is read from the local CSV at
-     config.FEMA_NRI_LOCAL_PATH.
-
-If a city's image directory is missing/empty, that is reported loudly
-and that city's agent runs with FEMA risk text only (no images) rather
-than crashing -- but nothing synthetic is silently substituted for the
-images themselves. FEMA NRI still falls back to clearly-tagged synthetic
-hazard scores if its CSV can't be found, since the Gini math needs
-*some* need-score baseline to run at all; every such run is flagged.
-"""
 
 from __future__ import annotations
 
@@ -44,9 +16,7 @@ import config
 logger = logging.getLogger("image_data")
 
 
-# --------------------------------------------------------------------------
-# City risk + image bundle
-# --------------------------------------------------------------------------
+
 @dataclass
 class CityData:
     """Everything one Resident agent needs: its city's images (as raw
@@ -87,9 +57,7 @@ class CityData:
         )
 
 
-# --------------------------------------------------------------------------
-# Local image loading (no network, no HuggingFace)
-# --------------------------------------------------------------------------
+
 def _resolve_path(entry: str) -> str:
     """Resolves one CITY_IMAGE_FILES entry. Absolute entries are used
     as-is; relative ones resolve against config.IMAGE_ROOT if set,
@@ -222,9 +190,7 @@ def load_images_for_city(city: str, limit: int = None) -> Tuple[List[Tuple[str, 
     return images, "config.CITY_IMAGE_FILES"
 
 
-# --------------------------------------------------------------------------
-# FEMA NRI loading (local CSV)
-# --------------------------------------------------------------------------
+
 def _find_first_matching_column(df: pd.DataFrame, candidates: List[str]) -> Optional[str]:
     """Case-insensitive lookup for the first candidate column name that
     actually exists in df. Returns None if none match."""
@@ -491,9 +457,7 @@ def _synthetic_risk_for_city(city: str):
     )
 
 
-# --------------------------------------------------------------------------
-# Top-level assembly
-# --------------------------------------------------------------------------
+
 def build_city_data(cities: List[str] = None) -> Dict[str, CityData]:
     """
     Builds the per-city image + risk bundles every Resident agent needs.
