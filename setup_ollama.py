@@ -1,27 +1,4 @@
-"""
-setup_ollama.py
-Ensures Ollama is installed and running, and that every model tag the
-selected study needs is pulled locally -- run this BEFORE main.py.
 
-Unlike the old vLLM setup, there is only ONE server here: Ollama serves
-every model from a single daemon (default http://localhost:11434) and
-loads/unloads model weights by tag on demand, so there's no per-model
-port assignment or GPU-memory-utilization fraction to budget across
-processes. That also means multi-model studies (study2c, study3) no
-longer risk the "not enough VRAM for all unique models at once" failure
-mode vLLM had -- the trade-off is possible model-swap latency between
-agents that use different models in the same run (see README "Ollama
-model-swapping notes").
-
-Usage:
-    python setup_ollama.py --study baseline
-    python setup_ollama.py --study study3_heterogeneous
-    python setup_ollama.py --list           # show locally pulled models
-    python setup_ollama.py --status         # show what's currently loaded (ollama ps)
-
-Then, in another terminal/cell:
-    python main.py --study <name>
-"""
 
 from __future__ import annotations
 
