@@ -1,45 +1,4 @@
-"""
-run_experiments.py
-Runs several diagnostic studies back to back in one command, saving each
-one's results to its own set of files, then writes a combined comparison.
 
-Every artifact is already tagged with the study name by main.py, so
-studies never overwrite each other:
-
-    traces/<study>__trace_<topology>.json
-    transcripts/<study>__<topology>_transcript.txt
-    figures/<study>__gini_trajectories.png
-    figures/<study>__avg_relative_gini.png
-    figures/<study>__relative_gini_per_topology_with_interventions.png
-
-This runner adds, on top of those:
-
-    results/<study>__summary.json      per-study summary (per topology + overall)
-    results/comparison.json            all studies side by side
-    results/comparison.csv             same, spreadsheet-friendly
-    figures/cross_study__avg_relative_gini.png
-
-Usage:
-    # everything
-    python run_experiments.py --all
-
-    # just the ablation comparison
-    python run_experiments.py --studies study1_no_judge_improver baseline
-
-    # repeat each study N times (different seeds) -- see note below
-    python run_experiments.py --all --repeats 3
-
-A NOTE ON --repeats AND WHAT THIS CAN ACTUALLY SHOW:
-A single run per study is not enough to conclude that the Judge/Improver
-reduces bias. LLM negotiations are stochastic, and run-to-run variance
-can easily be larger than the effect you're looking for -- so one
-baseline run beating one ablation run (or vice versa) is not evidence
-either way. --repeats runs each study multiple times and reports mean,
-standard deviation, and min/max across runs, which is the minimum needed
-to say anything defensible. If the intervals for two studies overlap
-heavily, the honest conclusion is "no detectable difference at this
-sample size", not a win for whichever mean happens to be lower.
-"""
 
 from __future__ import annotations
 
