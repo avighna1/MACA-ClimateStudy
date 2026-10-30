@@ -1,25 +1,3 @@
-"""
-agents.py
-OOP agent implementations for the climate-budget multi-agent system.
-Each of the 6 agent ROLES (resident, infrastructure, financial,
-sustainability, judge, improver) gets its own OllamaClient, pointed at
-whichever MODEL_REGISTRY entry the active study assigns it (see
-config.STUDY_CONFIGS + build_role_clients() below). All roles share the
-SAME Ollama server -- only the `model` tag passed in each request
-differs by role. This is what makes the 4B/9B/heterogeneous-model
-diagnostic studies possible: agents.py never assumes "everyone uses the
-same model."
-
-Uses the NATIVE `ollama` Python package (ollama.Client.chat), NOT the
-OpenAI-compatible shim. Two reasons this matters:
-  - `think=False` is honored reliably by the native API. The
-    OpenAI-compat /v1/chat/completions endpoint has documented,
-    inconsistent support for it.
-  - Images are passed via the native `images=[...]` field on a message
-    (a list of raw base64 strings), which is simpler and better
-    supported than the OpenAI vision content-array format.
-"""
-
 from __future__ import annotations
 
 import json
@@ -36,9 +14,7 @@ from metrics import extract_allocations_from_text
 logger = logging.getLogger("agents")
 
 
-# --------------------------------------------------------------------------
-# Ollama client wrapper (native API)
-# --------------------------------------------------------------------------
+
 class OllamaClient:
     """
     Thin wrapper around the native `ollama` Python client. Centralizes
@@ -190,9 +166,7 @@ class OllamaClient:
         )
 
 
-# --------------------------------------------------------------------------
-# Shared message record
-# --------------------------------------------------------------------------
+
 @dataclass
 class Message:
     turn_index: int
@@ -211,9 +185,7 @@ class Message:
         }
 
 
-# --------------------------------------------------------------------------
-# Base agent
-# --------------------------------------------------------------------------
+
 class BaseAgent:
     role: str = "base"
 
@@ -243,9 +215,7 @@ def _is_number(v) -> bool:
         return False
 
 
-# --------------------------------------------------------------------------
-# Resident (Zone Advocate) agents
-# --------------------------------------------------------------------------
+
 class ResidentAgent(BaseAgent):
     role = "resident"
 
@@ -348,9 +318,7 @@ class ResidentAgent(BaseAgent):
         return Message(turn_index=-1, speaker=self.name, role=self.role, content=content, allocations=allocations)
 
 
-# --------------------------------------------------------------------------
-# Functional Allocator agents
-# --------------------------------------------------------------------------
+
 class FunctionalAgent(BaseAgent):
     role = "functional"
     focus_description: str = "general budget allocation"
@@ -420,9 +388,7 @@ class SustainabilityAgent(FunctionalAgent):
         super().__init__(name="SustainabilityAgent", client=client)
 
 
-# --------------------------------------------------------------------------
-# Judge agent
-# --------------------------------------------------------------------------
+
 class JudgeAgent(BaseAgent):
     role = "judge"
 
@@ -516,9 +482,7 @@ class JudgeAgent(BaseAgent):
         return verdict
 
 
-# --------------------------------------------------------------------------
-# Improver agent
-# --------------------------------------------------------------------------
+
 class ImproverAgent(BaseAgent):
     role = "improver"
 
@@ -586,9 +550,7 @@ class ImproverAgent(BaseAgent):
         return Message(turn_index=-1, speaker=self.name, role=self.role, content=content, allocations={})
 
 
-# --------------------------------------------------------------------------
-# Role -> client factory
-# --------------------------------------------------------------------------
+
 def build_role_clients(
     role_models: Dict[str, str],
     allow_offline_fallback: bool = False,
