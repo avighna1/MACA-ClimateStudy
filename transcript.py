@@ -1,15 +1,3 @@
-"""
-transcript.py
-Writes the FULL text of every agent message — resident proposals,
-functional-agent negotiation turns, Judge qualitative reviews, and
-Improver corrections — to a human-readable .txt transcript AND echoes it
-to the terminal as it happens. This is deliberately separate from the
-structured JSON trace (logger.py): the JSON is for programmatic re-
-plotting, this is for a human (or a paper reviewer) to actually read
-what the agents said, in order, with the Gini score attached to each
-allocation-bearing message.
-"""
-
 from __future__ import annotations
 
 import os
