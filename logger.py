@@ -1,17 +1,3 @@
-"""
-logger.py
-JSON execution-trace logging and the 3 categories of Relative-Gini plots:
-  1. Overlay comparison of all 3 topologies' Gini trajectories (one figure).
-  2. Average Relative Gini per topology (bar chart).
-  3. Per-topology Gini-across-turns with Improver intervention points marked
-     (one subplot per topology).
-
-All output paths are read from `config.TRACE_DIR` / `config.FIGURE_DIR` at
-CALL TIME (not import time), since main.py rewrites those to point at the
-resolved Google Drive root via config.set_project_root() before any run
-starts. Every filename is tagged with the active study name so different
-diagnostic studies never overwrite each other's traces/figures.
-"""
 
 from __future__ import annotations
 
@@ -40,12 +26,7 @@ TOPO_COLORS = {"star": "#d95f02", "parallel": "#1b9e77", "ring": "#7570b3"}
 TOPO_MARKERS = {"star": "o", "parallel": "s", "ring": "^"}
 TOPO_LABELS = {"star": "Star", "parallel": "Parallel", "ring": "Ring"}
 
-# Only these agent roles actually decide the budget. Judge and Improver
-# messages carry NO allocation, so their Gini value is just a repeat of
-# the preceding negotiating turn -- including them made the trajectory
-# plots show flat "staircase" steps that looked like the allocation had
-# stalled when it simply hadn't been updated yet. Every plot below
-# filters to these roles so the curves show only real negotiating moves.
+
 NEGOTIATING_ROLES = {"resident", "functional"}
 
 
@@ -113,9 +94,7 @@ class ExecutionLogger:
             return json.load(f)
 
 
-# --------------------------------------------------------------------------
-# Plot 1: overlay comparison of all 3 topologies' Gini trajectories
-# --------------------------------------------------------------------------
+
 def plot_gini_trajectories(
     results: Dict[str, List[TurnMetrics]],
     study_name: str = "study",
@@ -157,9 +136,7 @@ def plot_gini_trajectories(
     return save_path
 
 
-# --------------------------------------------------------------------------
-# Plot 2: average Relative Gini per topology (bar chart)
-# --------------------------------------------------------------------------
+
 def plot_average_relative_gini(
     results: Dict[str, List[TurnMetrics]],
     study_name: str = "study",
@@ -197,9 +174,7 @@ def plot_average_relative_gini(
     return save_path
 
 
-# --------------------------------------------------------------------------
-# Plot 3: per-topology Gini-across-turns with intervention points marked
-# --------------------------------------------------------------------------
+
 def plot_relative_gini_with_interventions(
     results: Dict[str, List[TurnMetrics]],
     study_name: str = "study",
@@ -251,10 +226,7 @@ def plot_relative_gini_with_interventions(
     return save_path
 
 
-# --------------------------------------------------------------------------
-# Cross-study comparison (used by evaluate.py to compare e.g. study1 vs
-# baseline, or study2a vs 2b vs 2c) — average Relative Gini per study.
-# --------------------------------------------------------------------------
+
 def plot_cross_study_average_gini(
     study_averages: Dict[str, float],
     save_path: str = None,
