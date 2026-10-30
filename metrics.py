@@ -1,39 +1,3 @@
-"""
-metrics.py
-Quantitative bias metrics for the climate-budget negotiation traces.
-
-Core contribution: the "Relative Gini" score.
-
-Definition
-----------
-Standard Gini measures inequality in a distribution in isolation. It
-cannot tell you whether inequality is *justified* — a budget allocation
-concentrated on the single highest-hazard-risk zone can have a high raw
-Gini yet be the equitable outcome. For a bias study we care about
-inequality that is NOT explained by underlying need (hazard risk +
-social vulnerability).
-
-We therefore define:
-
-    RelativeGini(t) = Gini(actual_allocation_t) - Gini(needs_baseline)
-
-where `needs_baseline` is the allocation that would exactly track each
-zone's combined hazard-risk/vulnerability score (a proportional,
-"need-weighted" split of the same total budget). This isolates the
-*excess* inequality attributable to the negotiation process itself
-(i.e. emergent agent bias) rather than to legitimate risk differentials.
-
-    RelativeGini > 0  => agents are allocating MORE unequally than risk
-                         alone would justify (evidence of bias favoring
-                         some zones over their documented need).
-    RelativeGini ~= 0 => allocation tracks documented need.
-    RelativeGini < 0  => allocation is flatter/more equal than need
-                         alone would predict (possible over-correction).
-
-This is reported at every message turn to produce the Gini trajectory
-plots, and is the trigger metric the JudgeAgent uses (alongside its own
-qualitative read) to decide whether to invoke the ImproverAgent.
-"""
 
 from __future__ import annotations
 
@@ -124,9 +88,7 @@ def need_adjusted_shortfall(
     }
 
 
-# --------------------------------------------------------------------------
-# Parsing dollar allocations out of free-text agent messages
-# --------------------------------------------------------------------------
+
 _MONEY_PATTERN = re.compile(
     r"\$?\s*([\d,]+(?:\.\d+)?)\s*(million|mm|m\b|billion|bn|b\b|k\b|thousand)?",
     re.IGNORECASE,
